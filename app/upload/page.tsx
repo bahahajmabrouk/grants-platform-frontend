@@ -4,14 +4,40 @@ import { useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import { uploadPitchDeck, getPitchStatus } from "@/lib/api";
 import { PitchUploadResponse, PitchExtractedData } from "@/types/pitch";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { isAuthenticated, getUser, clearAuth } from "@/lib/auth";
+import { User } from "@/types/auth";
+import StepsNavbar from "@/components/StepsNavbar";
+
 
 export default function UploadPage() {
+  const router = useRouter();
   const [status, setStatus] = useState<"idle" | "uploading" | "processing" | "done" | "error">("idle");
   const [result, setResult] = useState<PitchExtractedData | null>(null);
   const [error, setError] = useState<string>("");
   const [filename, setFilename] = useState<string>("");
   const [progress, setProgress] = useState(0);
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [showDropdown, setShowDropdown] = useState(false);
 
+ 
+
+useEffect(() => {
+  if (!isAuthenticated()) {
+    router.push("/login");
+  } else {
+    const userData = getUser();
+    setUser(userData);
+    setIsLoading(false);
+  }
+}, [router]);
+
+const handleLogout = () => {
+  clearAuth();
+  router.push("/login");
+};
   const pollStatus = async (pitchId: string) => {
     let attempts = 0;
     const interval = setInterval(async () => {
@@ -23,6 +49,8 @@ export default function UploadPage() {
           clearInterval(interval);
           setProgress(100);
           setResult(data.extracted_data);
+          localStorage.setItem("pitch_id", data.pitch_id);
+          localStorage.setItem("pitch_data", JSON.stringify(data.extracted_data));
           setStatus("done");
         } else if (data.status === "failed") {
           clearInterval(interval);
@@ -46,6 +74,8 @@ export default function UploadPage() {
     setResult(null);
     try {
       const response: PitchUploadResponse = await uploadPitchDeck(file);
+      // Store pitch_id in localStorage to enable step 2
+      localStorage.setItem("pitch_id", response.pitch_id);
       setStatus("processing");
       setProgress(20);
       await pollStatus(response.pitch_id);
@@ -66,6 +96,26 @@ export default function UploadPage() {
   });
 
   const reset = () => { setStatus("idle"); setResult(null); setError(""); setProgress(0); };
+
+  const handleLaunchSearch = () => {
+    // Validate that pitch data exists
+    if (!result) {
+      alert("Veuillez d'abord extraire les données de votre pitch deck.");
+      return;
+    }
+
+    // Verify localStorage has been set
+    const pitchId = localStorage.getItem("pitch_id");
+    const pitchData = localStorage.getItem("pitch_data");
+
+    if (!pitchId || !pitchData) {
+      alert("Erreur: Les données du pitch n'ont pas été sauvegardées. Veuillez réessayer.");
+      return;
+    }
+
+    // Navigate to grants search page
+    router.push("/grants");
+  };
 
   return (
     <>
@@ -103,7 +153,202 @@ export default function UploadPage() {
           color: #3fb950;
         }
 
-        /* HERO */
+        /* USER PROFILE CARD */
+        .user-profile-wrapper {
+          position: relative;
+        }
+
+        .user-profile-card {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding: 8px 16px;
+          background: rgba(21,25,32,0.5);
+          border: 1px solid #30363d;
+          border-radius: 12px;
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+
+        .user-profile-card:hover {
+          background: rgba(31,35,42,0.8);
+          border-color: #3fb950;
+        }
+
+        .profile-avatar {
+          width: 36px;
+          height: 36px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, #238636, #2ea043);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 14px;
+          font-weight: 700;
+          color: white;
+          flex-shrink: 0;
+        }
+
+        .profile-info {
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
+          min-width: 0;
+        }
+
+        .profile-name {
+          font-size: 13px;
+          font-weight: 600;
+          color: white;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .profile-company {
+          font-size: 11px;
+          color: #7d8590;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .profile-chevron {
+          font-size: 12px;
+          color: #7d8590;
+          transition: transform 0.2s ease;
+          flex-shrink: 0;
+          margin-left: 4px;
+        }
+
+        .profile-chevron.active {
+          transform: rotate(180deg);
+          color: #3fb950;
+        }
+
+        /* DROPDOWN MENU */
+        .profile-dropdown {
+          position: absolute;
+          top: calc(100% + 8px);
+          right: 0;
+          background: #161b22;
+          border: 1px solid #30363d;
+          border-radius: 12px;
+          min-width: 280px;
+          box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+          z-index: 100;
+          opacity: 0;
+          visibility: hidden;
+          transform: translateY(-8px);
+          transition: all 0.2s ease;
+        }
+
+        .profile-dropdown.active {
+          opacity: 1;
+          visibility: visible;
+          transform: translateY(0);
+        }
+
+        .dropdown-header {
+          padding: 16px;
+          border-bottom: 1px solid #21262d;
+          display: flex;
+          align-items: center;
+          gap: 12px;
+        }
+
+        .dropdown-avatar {
+          width: 48px;
+          height: 48px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, #238636, #2ea043);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 20px;
+          font-weight: 700;
+          color: white;
+          flex-shrink: 0;
+        }
+
+        .dropdown-user-info {
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+          flex: 1;
+        }
+
+        .dropdown-user-name {
+          font-size: 13px;
+          font-weight: 700;
+          color: white;
+        }
+
+        .dropdown-user-email {
+          font-size: 12px;
+          color: #7d8590;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        .dropdown-user-company {
+          font-size: 11px;
+          color: #58a6ff;
+          font-weight: 500;
+        }
+
+        .dropdown-body {
+          padding: 8px 8px;
+        }
+
+        .dropdown-item {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          padding: 10px 12px;
+          color: #7d8590;
+          font-size: 13px;
+          border-radius: 8px;
+          cursor: pointer;
+          transition: all 0.15s ease;
+        }
+
+        .dropdown-item:hover {
+          background: rgba(35,134,54,0.1);
+          color: #adbac7;
+        }
+
+        .dropdown-item.logout {
+          color: #f85149;
+          border-top: 1px solid #21262d;
+          margin-top: 4px;
+          padding-top: 10px;
+        }
+
+        .dropdown-item.logout:hover {
+          background: rgba(248,81,73,0.1);
+          color: #ff7b72;
+        }
+
+        .profile-loading {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          padding: 8px 16px;
+          color: #7d8590;
+          font-size: 13px;
+        }
+
+        .loading-spinner {
+          width: 12px;
+          height: 12px;
+          border: 2px solid #30363d;
+          border-top-color: #3fb950;
+          border-radius: 50%;
+          animation: spin 0.8s linear infinite;
+        }
         .hero {
           padding: 60px 40px 40px;
           max-width: 900px; margin: 0 auto;
@@ -315,6 +560,11 @@ export default function UploadPage() {
           .content { padding: 0 20px 60px; }
           .nav { padding: 12px 20px; }
           .nav-steps { display: none; }
+          .profile-name { font-size: 12px; }
+          .profile-company { font-size: 10px; }
+          .user-profile-card { padding: 6px 12px; gap: 10px; }
+          .profile-avatar { width: 32px; height: 32px; font-size: 12px; }
+          .profile-dropdown { min-width: 240px; }
         }
       `}</style>
 
@@ -325,11 +575,73 @@ export default function UploadPage() {
             <div className="nav-logo-icon">🚀</div>
             <span className="nav-logo-text">Grants Platform</span>
           </div>
-          <div className="nav-steps">
-            <div className="nav-step active">1 · Upload</div>
-            <div className="nav-step">2 · Grants</div>
-            <div className="nav-step">3 · Adaptation</div>
-            <div className="nav-step">4 · Soumission</div>
+          <div style={{display: 'flex', alignItems: 'center', gap: '24px'}}>
+            <StepsNavbar />
+
+            {/* USER PROFILE SECTION */}
+            {isLoading ? (
+              <div className="profile-loading">
+                <div className="loading-spinner"></div>
+              </div>
+            ) : user ? (
+              <div className="user-profile-wrapper">
+                <div 
+                  className="user-profile-card"
+                  onClick={() => setShowDropdown(!showDropdown)}
+                  onMouseEnter={() => setShowDropdown(true)}
+                  onMouseLeave={() => setShowDropdown(false)}
+                >
+                  <div className="profile-avatar">
+                    {(user.first_name?.[0] || '').toUpperCase()}{(user.last_name?.[0] || '').toUpperCase()}
+                  </div>
+                  <div className="profile-info">
+                    <div className="profile-name">
+                      {user.first_name} {user.last_name}
+                    </div>
+                    <div className="profile-company">
+                      {user.company_name || "No company"}
+                    </div>
+                  </div>
+                  <div className={`profile-chevron ${showDropdown ? 'active' : ''}`}>▼</div>
+                </div>
+
+                {/* DROPDOWN MENU */}
+                <div 
+                  className={`profile-dropdown ${showDropdown ? 'active' : ''}`}
+                  onMouseEnter={() => setShowDropdown(true)}
+                  onMouseLeave={() => setShowDropdown(false)}
+                >
+                  <div className="dropdown-header">
+                    <div className="dropdown-avatar">
+                      {(user.first_name?.[0] || '').toUpperCase()}{(user.last_name?.[0] || '').toUpperCase()}
+                    </div>
+                    <div className="dropdown-user-info">
+                      <div className="dropdown-user-name">
+                        {user.first_name} {user.last_name}
+                      </div>
+                      <div className="dropdown-user-email">
+                        {user.email}
+                      </div>
+                      <div className="dropdown-user-company">
+                        {user.company_name || "No company"}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="dropdown-body">
+                    <div 
+                      className="dropdown-item logout"
+                      onClick={() => {
+                        setShowDropdown(false);
+                        handleLogout();
+                      }}
+                    >
+                      <span>🚪</span>
+                      <span>Logout</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ) : null}
           </div>
         </nav>
 
@@ -487,7 +799,12 @@ export default function UploadPage() {
                     </div>
                   </div>
 
-                  <button className="cta-btn">
+                  <button 
+                    className="cta-btn" 
+                    onClick={handleLaunchSearch}
+                    disabled={!result}
+                    style={!result ? { opacity: 0.5, cursor: "not-allowed" } : {}}
+                  >
                     🔍 Lancer la Recherche de Grants →
                   </button>
                 </div>

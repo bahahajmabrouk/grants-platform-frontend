@@ -42,7 +42,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
       saveUser(response.user);
 
       // Redirection
-      router.push("/dashboard");
+      router.push("/upload");
 
       if (onSuccess) {
         onSuccess();
