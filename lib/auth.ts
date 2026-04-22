@@ -46,18 +46,12 @@ export function isAuthenticated(): boolean {
   return !!localStorage.getItem(ACCESS_TOKEN_KEY);
 }
 
-// ────────────────────────────────────
-// 📧 EMAIL VALIDATION
-// ────────────────────────────────────
 
 export function isValidEmail(email: string): boolean {
   const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return re.test(email);
 }
 
-// ───────────────────────────���────────
-// 🔑 PASSWORD VALIDATION
-// ────────────────────────────────────
 
 export function validatePassword(password: string): {
   valid: boolean;

@@ -7,221 +7,165 @@ import type { Grant, GrantFilters, GrantIndustry, SelectedGrants } from "@/types
 import { User } from "@/types/auth";
 import StepsNavbar from "@/components/StepsNavbar";
 
-// Mock grants data
-const MOCK_GRANTS: Grant[] = [
-  {
-    id: "g1",
-    name: "Google Startup Fund",
-    icon: "🔍",
-    amount: 500000,
-    currency: "USD",
-    deadline: 28,
-    matchPercentage: 92,
-    industry: "Tech",
-    stage: "Seed",
-    description: "Support for early-stage tech startups with focus on innovation and scalability.",
-    organization: "Google",
-    country: "USA",
-  },
-  {
-    id: "g2",
-    name: "Y Combinator",
-    icon: "🚀",
-    amount: 2000000,
-    currency: "USD",
-    deadline: 15,
-    matchPercentage: 88,
-    industry: "Tech",
-    stage: "Seed",
-    description: "Accelerator program for technology startups offering mentorship and funding.",
-    organization: "Y Combinator",
-    country: "USA",
-  },
-  {
-    id: "g3",
-    name: "Stripe Climate",
-    icon: "💨",
-    amount: 1000000,
-    currency: "USD",
-    deadline: 45,
-    matchPercentage: 85,
-    industry: "CleanTech",
-    stage: "Series A",
-    description: "Funding for companies building technology to remove CO2 from the atmosphere.",
-    organization: "Stripe",
-    country: "USA",
-  },
-  {
-    id: "g4",
-    name: "Gates Foundation",
-    icon: "🏥",
-    amount: 5000000,
-    currency: "USD",
-    deadline: 60,
-    matchPercentage: 78,
-    industry: "HealthTech",
-    stage: "Series A",
-    description: "Support for health innovation projects with global impact and social benefit.",
-    organization: "Bill & Melinda Gates Foundation",
-    country: "USA",
-  },
-  {
-    id: "g5",
-    name: "EU Horizon Europe",
-    icon: "🇪🇺",
-    amount: 2500000,
-    currency: "EUR",
-    deadline: 90,
-    matchPercentage: 82,
-    industry: "Biotech",
-    stage: "Series A",
-    description: "European research and innovation funding for biotech and life science projects.",
-    organization: "European Commission",
-    country: "Europe",
-  },
-  {
-    id: "g6",
-    name: "Mastercard Foundation",
-    icon: "💳",
-    amount: 3000000,
-    currency: "USD",
-    deadline: 75,
-    matchPercentage: 80,
-    industry: "FinTech",
-    stage: "Series A",
-    description: "Financial inclusion initiatives and digital payment solutions for emerging markets.",
-    organization: "Mastercard Foundation",
-    country: "USA",
-  },
-  {
-    id: "g7",
-    name: "Carbon Trust Innovation Fund",
-    icon: "🌱",
-    amount: 750000,
-    currency: "GBP",
-    deadline: 35,
-    matchPercentage: 87,
-    industry: "CleanTech",
-    stage: "Seed",
-    description: "Accelerating clean technology solutions and carbon reduction innovations.",
-    organization: "Carbon Trust",
-    country: "UK",
-  },
-  {
-    id: "g8",
-    name: "UNDP Gender Challenge",
-    icon: "👩",
-    amount: 500000,
-    currency: "USD",
-    deadline: 50,
-    matchPercentage: 75,
-    industry: "General",
-    stage: "Seed",
-    description: "Support for women-led startups and gender equality technology initiatives.",
-    organization: "United Nations Development Programme",
-    country: "Global",
-  },
-  {
-    id: "g9",
-    name: "World Bank Innovation Lab",
-    icon: "🌍",
-    amount: 2000000,
-    currency: "USD",
-    deadline: 80,
-    matchPercentage: 79,
-    industry: "General",
-    stage: "Series A",
-    description: "Funding for social impact and sustainable development technology solutions.",
-    organization: "World Bank",
-    country: "Global",
-  },
-  {
-    id: "g10",
-    name: "Global Innovation Fund",
-    icon: "💡",
-    amount: 1500000,
-    currency: "USD",
-    deadline: 55,
-    matchPercentage: 84,
-    industry: "Tech",
-    stage: "Series A",
-    description: "Investments in early-stage innovators addressing global development challenges.",
-    organization: "Global Innovation Fund",
-    country: "Global",
-  },
-  {
-    id: "g11",
-    name: "TechCrunch Disrupt Startup Battlefield",
-    icon: "⚔️",
-    amount: 100000,
-    currency: "USD",
-    deadline: 20,
-    matchPercentage: 89,
-    industry: "Tech",
-    stage: "Seed",
-    description: "Competition and funding opportunity for innovative tech startups globally.",
-    organization: "TechCrunch",
-    country: "USA",
-  },
-  {
-    id: "g12",
-    name: "Singapore Economic Board BioInnovate",
-    icon: "🧬",
-    amount: 1200000,
-    currency: "SGD",
-    deadline: 65,
-    matchPercentage: 81,
-    industry: "Biotech",
-    stage: "Series A",
-    description: "Biotechnology and life sciences innovation hub funding for Asian startups.",
-    organization: "Singapore Economic Board",
-    country: "Singapore",
-  },
-  {
-    id: "g13",
-    name: "Agri-Tech Innovation Challenge",
-    icon: "🌾",
-    amount: 800000,
-    currency: "USD",
-    deadline: 40,
-    matchPercentage: 76,
-    industry: "AgriTech",
-    stage: "Seed",
-    description: "Supporting agricultural technology and sustainable farming solutions.",
-    organization: "Global Agri Foundation",
-    country: "Global",
-  },
-  {
-    id: "g14",
-    name: "British Council FinTech Acceleration",
-    icon: "🏦",
-    amount: 600000,
-    currency: "GBP",
-    deadline: 30,
-    matchPercentage: 86,
-    industry: "FinTech",
-    stage: "Seed",
-    description: "Fintech acceleration program for UK and international financial technology startups.",
-    organization: "British Council",
-    country: "UK",
-  },
-  {
-    id: "g15",
-    name: "HealthTech Accelerator Arabia",
-    icon: "🏥",
-    amount: 1800000,
-    currency: "SAR",
-    deadline: 70,
-    matchPercentage: 83,
-    industry: "HealthTech",
-    stage: "Series A",
-    description: "Accelerator program for digital health and medical technology innovation.",
-    organization: "Saudi Health Authority",
-    country: "Saudi Arabia",
-  },
-];
-
 const INDUSTRIES: GrantIndustry[] = ["Tech", "Biotech", "FinTech", "CleanTech", "HealthTech", "AgriTech"];
+
+
+async function searchGrantsFromAPI(pitchData: any, token: string): Promise<Grant[]> {
+  try {
+    // Normalize pitch data values to match backend expectations
+    const normalizeIndustry = (ind: string): string => {
+      if (!ind) return "Tech";
+      const mapping: { [key: string]: string } = {
+        "traveltech": "FinTech",
+        "travel": "FinTech",
+        "finance": "FinTech",
+        "fintech": "FinTech",
+        "biotech": "Biotech",
+        "bio": "Biotech",
+        "health": "HealthTech",
+        "healthtech": "HealthTech",
+        "agri": "AgriTech",
+        "agriculture": "AgriTech",
+        "cleantech": "CleanTech",
+        "clean": "CleanTech",
+        "energy": "CleanTech",
+      };
+      const lower = ind.toLowerCase();
+      return mapping[lower] || "Tech";
+    };
+
+    const normalizeStage = (stg: string): string => {
+      if (!stg) return "Seed";
+      const mapping: { [key: string]: string } = {
+        "early": "Seed",
+        "pre-seed": "Seed",
+        "preseed": "Seed",
+        "seed": "Seed",
+        "series-a": "Series A",
+        "series a": "Series A",
+        "seriesA": "Series A",
+        "series-b": "Series B",
+        "series b": "Series B",
+        "seriesB": "Series B",
+      };
+      const lower = stg.toLowerCase();
+      return mapping[lower] || "Seed";
+    };
+
+    const normalizeCountry = (cnt: string): string => {
+      if (!cnt) return "US";
+      const mapping: { [key: string]: string } = {
+        "usa": "US",
+        "us": "US",
+        "united states": "US",
+        "europe": "EU",
+        "eu": "EU",
+        "european": "EU",
+        "global": "Global",
+        "world": "Global",
+        "international": "Global",
+      };
+      const lower = cnt.toLowerCase();
+      return mapping[lower] || "Global";
+    };
+
+    const response = await fetch("http://localhost:8000/api/v1/grants/search", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        pitch_id: pitchData?.pitch_id || "default-pitch",
+        industry: normalizeIndustry(pitchData?.industry),
+        stage: normalizeStage(pitchData?.stage),
+        country: normalizeCountry(pitchData?.country),
+        keywords: pitchData?.keywords || [],
+        max_results: 20,
+      }),
+    });
+
+    if (!response.ok) {
+      console.error("API Error:", response.statusText);
+      return [];
+    }
+
+    const data = await response.json();
+    console.log("🎯 Raw API Response grants:", data.grants);
+    console.log("🎯 Data grants is Array?", Array.isArray(data.grants));
+    console.log("🎯 First item:", data.grants?.[0]);
+    
+    // Handle both single array and nested array cases
+    let grantsArray = data.grants;
+    if (grantsArray?.length === 1 && Array.isArray(grantsArray[0])) {
+      console.warn("⚠️ Detected nested array, flattening...");
+      grantsArray = grantsArray[0];
+    }
+    
+    // ✅ Transformer les résultats API en format Grant
+    const transformedGrants = grantsArray.map((grant: any, index: number) => {
+      console.log(`Processing grant ${index}:`, grant);
+      const transformed = {
+        id: grant.grant_id,
+        name: grant.name,
+        icon: getIconForGrant(grant.organization),
+        amount: parseFloat(grant.funding_amount?.match(/[\d,]+/)?.[0]?.replace(/,/g, "") || "0"),
+        currency: "USD",
+        deadline: grant.deadline ? calculateDaysUntilDeadline(grant.deadline) : 30,
+        matchPercentage: Math.round((grant.relevance_score || 0) * 100),
+        industry: grant.industry_focus?.[0] || "Tech",
+        stage: grant.stage_focus?.[0] || "Seed",
+        description: grant.description || "",
+        organization: grant.organization || "",
+        country: grant.country_focus?.[0] || "Global",
+        portal_url: grant.portal_url || "",
+      };
+      console.log(`Transformed grant ${index}:`, transformed);
+      return transformed;
+    });
+    console.log("✅ All transformed grants:", transformedGrants);
+    return transformedGrants;
+  } catch (error) {
+    console.error("Error fetching grants:", error);
+    return [];
+  }
+}
+
+// ✅ HELPER: Déterminer un icon basé sur l'organisation
+function getIconForGrant(organization: string): string {
+  const icons: { [key: string]: string } = {
+    Google: "🔍",
+    "Y Combinator": "🚀",
+    Stripe: "💨",
+    "Bill & Melinda Gates Foundation": "🏥",
+    "European Commission": "🇪🇺",
+    Mastercard: "💳",
+    "Carbon Trust": "🌱",
+    UNDP: "👩",
+    "World Bank": "🌍",
+    "Global Innovation Fund": "💡",
+    TechCrunch: "⚔️",
+    Singapore: "🧬",
+    "Agri Foundation": "🌾",
+    "British Council": "🏦",
+    "Saudi Health": "🏥",
+  };
+
+  for (const [key, icon] of Object.entries(icons)) {
+    if (organization.includes(key)) return icon;
+  }
+  return "🎯";
+}
+
+// ✅ HELPER: Calculer les jours jusqu'à deadline
+function calculateDaysUntilDeadline(deadline: string): number {
+  if (!deadline) return 30;
+  const deadlineDate = new Date(deadline);
+  const today = new Date();
+  const diff = deadlineDate.getTime() - today.getTime();
+  const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+  return Math.max(days, 0);
+}
 
 export default function GrantsPage() {
   const router = useRouter();
@@ -229,10 +173,15 @@ export default function GrantsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [showDropdown, setShowDropdown] = useState(false);
 
+  // ✅ NOUVEAU: State pour grants et loading
+  const [grants, setGrants] = useState<Grant[]>([]);
+  const [grantsLoading, setGrantsLoading] = useState(true);
+  const [grantsError, setGrantsError] = useState<string | null>(null);
+
   // Filters state
   const [filters, setFilters] = useState<GrantFilters>({
     industry: "All",
-    amountRange: { min: 0, max: 500000 },
+    amountRange: { min: 0, max: 5000000 },
     deadline: "Any",
     search: "",
   });
@@ -251,9 +200,49 @@ export default function GrantsPage() {
     }
   }, [router]);
 
+  // ✅ NOUVEAU: Charger les grants depuis l'API au démarrage
+  useEffect(() => {
+    const fetchGrants = async () => {
+      setGrantsLoading(true);
+      setGrantsError(null);
+
+      try {
+        // Récupérer les données du pitch depuis localStorage
+        const pitchData = localStorage.getItem("pitch_data");
+        const parsedPitchData = pitchData ? JSON.parse(pitchData) : null;
+        
+        // Récupérer le token
+        const token = localStorage.getItem("token") || localStorage.getItem("access_token")
+        if (!token) {
+          throw new Error("No authentication token found");
+        }
+
+        // Appeler l'API
+        const apiGrants = await searchGrantsFromAPI(parsedPitchData, token);
+        
+        console.log("✅ API Grants returned:", apiGrants.length);
+        
+        setGrants(apiGrants);
+        
+        if (apiGrants.length === 0) {
+          setGrantsError("Aucun grant trouvé pour votre profil");
+        } else {
+          setGrantsError(null);  // ← CLEAR error si on a des grants
+        }
+      } catch (error) {
+        console.error("Error loading grants:", error);
+        setGrantsError(error instanceof Error ? error.message : "Erreur lors du chargement");
+      } finally {
+        setGrantsLoading(false);
+      }
+    };
+
+    fetchGrants();
+  }, []);
+
   // Filter grants
   const filteredGrants = useMemo(() => {
-    return MOCK_GRANTS.filter((grant) => {
+    return grants.filter((grant) => {
       // Industry filter
       if (filters.industry !== "All" && grant.industry !== filters.industry) {
         return false;
@@ -284,12 +273,14 @@ export default function GrantsPage() {
 
       return true;
     });
-  }, [filters]);
+  }, [grants, filters]);
 
   // Stats
   const stats = useMemo(() => {
     const totalAmount = filteredGrants.reduce((sum, g) => sum + g.amount, 0);
-    const earliestDeadline = Math.min(...filteredGrants.map((g) => g.deadline));
+    const earliestDeadline = filteredGrants.length > 0 
+      ? Math.min(...filteredGrants.map((g) => g.deadline))
+      : 0;
     return {
       count: filteredGrants.length,
       totalAmount,
@@ -630,6 +621,38 @@ export default function GrantsPage() {
           font-size: 14px;
           color: #7d8590;
           line-height: 1.6;
+        }
+
+        /* LOADING STATE */
+        .loading-message {
+          text-align: center;
+          padding: 60px 20px;
+          color: #7d8590;
+        }
+
+        .loading-message .spinner {
+          width: 40px;
+          height: 40px;
+          border: 3px solid #30363d;
+          border-top-color: #3fb950;
+          border-radius: 50%;
+          animation: spin 0.8s linear infinite;
+          margin: 0 auto 20px;
+        }
+
+        .loading-message .text {
+          font-size: 14px;
+        }
+
+        /* ERROR STATE */
+        .error-message {
+          background: rgba(248, 81, 73, 0.1);
+          border: 1px solid rgba(248, 81, 73, 0.3);
+          border-radius: 8px;
+          padding: 16px;
+          color: #ff7b72;
+          text-align: center;
+          margin: 20px 0;
         }
 
         /* STATS */
@@ -1173,244 +1196,267 @@ export default function GrantsPage() {
             Étape 2 sur 4
           </div>
 
-          <div className="header">
-            <h1 className="title">Trouvez les Grants Adaptés à Votre Profil</h1>
-            <p className="subtitle">
-              {stats.count} grants correspondant à votre profil • Total potentiel:{" "}
-              <strong style={{ color: "#3fb950" }}>
-                ${(stats.totalAmount / 1000000).toFixed(1)}M
-              </strong>{" "}
-              • Délai le plus proche:{" "}
-              <strong style={{ color: "#f85149" }}>{stats.earliestDeadline} jours</strong>
-            </p>
-          </div>
-
-          {/* STATS */}
-          <div className="stats">
-            <div className="stat-card">
-              <div className="stat-label">Grants trouvés</div>
-              <div className="stat-value">{stats.count}</div>
+          {/* ✅ LOADING STATE */}
+          {grantsLoading ? (
+            <div className="loading-message">
+              <div className="spinner"></div>
+              <div className="text">Recherche des grants adaptés à votre profil...</div>
             </div>
-            <div className="stat-card">
-              <div className="stat-label">Total potentiel</div>
-              <div className="stat-value">${(stats.totalAmount / 1000000).toFixed(1)}M</div>
-              <div className="stat-subtext">Financement possible</div>
-            </div>
-            <div className="stat-card">
-              <div className="stat-label">Délai le plus proche</div>
-              <div className="stat-value" style={{ color: "#f85149" }}>
-                {stats.earliestDeadline}j
+          ) : grantsError ? (
+            <>
+              <div className="header">
+                <h1 className="title">Trouvez les Grants Adaptés à Votre Profil</h1>
               </div>
-              <div className="stat-subtext">Jours avant fermeture</div>
-            </div>
-          </div>
-
-          {/* FILTERS */}
-          <div className="filters-section">
-            <div className="filters-title">🔍 Filtrer les Grants</div>
-            <div className="filters-grid">
-              <div className="filter-group">
-                <label className="filter-label">Industrie</label>
-                <select
-                  className="filter-select"
-                  value={filters.industry}
-                  onChange={(e) =>
-                    setFilters({
-                      ...filters,
-                      industry: e.target.value as GrantIndustry | "All",
-                    })
-                  }
-                >
-                  <option value="All">Toutes les industries</option>
-                  {INDUSTRIES.map((industry) => (
-                    <option key={industry} value={industry}>
-                      {industry}
-                    </option>
-                  ))}
-                </select>
+              <div className="error-message">
+                ⚠️ {grantsError}
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="header">
+                <h1 className="title">Trouvez les Grants Adaptés à Votre Profil</h1>
+                <p className="subtitle">
+                  {stats.count} grants correspondant à votre profil • Total potentiel:{" "}
+                  <strong style={{ color: "#3fb950" }}>
+                    ${(stats.totalAmount / 1000000).toFixed(1)}M
+                  </strong>{" "}
+                  • Délai le plus proche:{" "}
+                  <strong style={{ color: "#f85149" }}>
+                    {stats.earliestDeadline > 0 ? `${stats.earliestDeadline} jours` : "N/A"}
+                  </strong>
+                </p>
               </div>
 
-              <div className="filter-group">
-                <label className="filter-label">Montant (USD)</label>
-                <div className="range-inputs">
-                  <input
-                    type="number"
-                    className="range-input"
-                    placeholder="Min"
-                    value={filters.amountRange.min}
-                    onChange={(e) =>
-                      setFilters({
-                        ...filters,
-                        amountRange: {
-                          ...filters.amountRange,
-                          min: parseInt(e.target.value) || 0,
-                        },
-                      })
-                    }
-                  />
-                  <span className="range-separator">-</span>
-                  <input
-                    type="number"
-                    className="range-input"
-                    placeholder="Max"
-                    value={filters.amountRange.max}
-                    onChange={(e) =>
-                      setFilters({
-                        ...filters,
-                        amountRange: {
-                          ...filters.amountRange,
-                          max: parseInt(e.target.value) || 500000,
-                        },
-                      })
-                    }
-                  />
+              {/* STATS */}
+              <div className="stats">
+                <div className="stat-card">
+                  <div className="stat-label">Grants trouvés</div>
+                  <div className="stat-value">{stats.count}</div>
+                </div>
+                <div className="stat-card">
+                  <div className="stat-label">Total potentiel</div>
+                  <div className="stat-value">${(stats.totalAmount / 1000000).toFixed(1)}M</div>
+                  <div className="stat-subtext">Financement possible</div>
+                </div>
+                <div className="stat-card">
+                  <div className="stat-label">Délai le plus proche</div>
+                  <div className="stat-value" style={{ color: "#f85149" }}>
+                    {stats.earliestDeadline > 0 ? `${stats.earliestDeadline}j` : "N/A"}
+                  </div>
+                  <div className="stat-subtext">Jours avant fermeture</div>
                 </div>
               </div>
 
-              <div className="filter-group">
-                <label className="filter-label">Délai</label>
-                <select
-                  className="filter-select"
-                  value={filters.deadline}
-                  onChange={(e) =>
-                    setFilters({
-                      ...filters,
-                      deadline: e.target.value as "30" | "60" | "90" | "Any",
-                    })
-                  }
-                >
-                  <option value="Any">N'importe quel délai</option>
-                  <option value="30">30 jours</option>
-                  <option value="60">60 jours</option>
-                  <option value="90">90 jours</option>
-                </select>
-              </div>
+              {/* FILTERS */}
+              <div className="filters-section">
+                <div className="filters-title">🔍 Filtrer les Grants</div>
+                <div className="filters-grid">
+                  <div className="filter-group">
+                    <label className="filter-label">Industrie</label>
+                    <select
+                      className="filter-select"
+                      value={filters.industry}
+                      onChange={(e) =>
+                        setFilters({
+                          ...filters,
+                          industry: e.target.value as GrantIndustry | "All",
+                        })
+                      }
+                    >
+                      <option value="All">Toutes les industries</option>
+                      {INDUSTRIES.map((industry) => (
+                        <option key={industry} value={industry}>
+                          {industry}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
 
-              <div className="filter-group">
-                <label className="filter-label">Recherche</label>
-                <input
-                  type="text"
-                  className="filter-input"
-                  placeholder="Nom, organisation..."
-                  value={filters.search}
-                  onChange={(e) =>
-                    setFilters({
-                      ...filters,
-                      search: e.target.value,
-                    })
-                  }
-                />
-              </div>
-            </div>
-
-            <div className="filter-buttons">
-              <button
-                className="btn"
-                onClick={() =>
-                  setFilters({
-                    industry: "All",
-                    amountRange: { min: 0, max: 500000 },
-                    deadline: "Any",
-                    search: "",
-                  })
-                }
-              >
-                ↺ Reset
-              </button>
-            </div>
-          </div>
-
-          {/* GRANTS */}
-          <div className="grants-container">
-            <div className="grants-header">
-              <div className="grants-count">
-                {filteredGrants.length} grant{filteredGrants.length !== 1 ? "s" : ""} trouvé
-                {filteredGrants.length !== 1 ? "s" : ""}
-              </div>
-              <div className="select-all-wrap">
-                <input
-                  type="checkbox"
-                  className="select-all-checkbox"
-                  checked={filteredGrants.length > 0 && selectedCount === filteredGrants.length}
-                  onChange={handleSelectAll}
-                />
-                <label className="select-all-label">Sélectionner tout</label>
-              </div>
-            </div>
-
-            {filteredGrants.length > 0 ? (
-              <div className="grants-grid">
-                {filteredGrants.map((grant) => (
-                  <div
-                    key={grant.id}
-                    className={`grant-card ${selectedGrants[grant.id] ? "selected" : ""}`}
-                    onClick={() => handleGrantToggle(grant.id)}
-                  >
-                    <input
-                      type="checkbox"
-                      className="grant-checkbox"
-                      checked={selectedGrants[grant.id] || false}
-                      onChange={() => handleGrantToggle(grant.id)}
-                      onClick={(e) => e.stopPropagation()}
-                    />
-
-                    <div className="grant-header">
-                      <div className="grant-icon">{grant.icon}</div>
-                      <div>
-                        <div className="grant-title">{grant.name}</div>
-                        <div className="grant-org">{grant.organization}</div>
-                      </div>
-                    </div>
-
-                    <div className="grant-metadata">
-                      <div className="grant-amount">
-                        ${(grant.amount / 1000).toFixed(0)}K
-                      </div>
-                      <div className="grant-deadline">{grant.deadline}j restants</div>
-                      <div className="grant-match">{grant.matchPercentage}% match</div>
-                    </div>
-
-                    <div className="grant-description">{grant.description}</div>
-
-                    <div className="grant-tags">
-                      <div className="tag industry">{grant.industry}</div>
-                      <div className="tag stage">{grant.stage}</div>
+                  <div className="filter-group">
+                    <label className="filter-label">Montant (USD)</label>
+                    <div className="range-inputs">
+                      <input
+                        type="number"
+                        className="range-input"
+                        placeholder="Min"
+                        value={filters.amountRange.min}
+                        onChange={(e) =>
+                          setFilters({
+                            ...filters,
+                            amountRange: {
+                              ...filters.amountRange,
+                              min: parseInt(e.target.value) || 0,
+                            },
+                          })
+                        }
+                      />
+                      <span className="range-separator">-</span>
+                      <input
+                        type="number"
+                        className="range-input"
+                        placeholder="Max"
+                        value={filters.amountRange.max}
+                        onChange={(e) =>
+                          setFilters({
+                            ...filters,
+                            amountRange: {
+                              ...filters.amountRange,
+                              max: parseInt(e.target.value) || 5000000,
+                            },
+                          })
+                        }
+                      />
                     </div>
                   </div>
-                ))}
-              </div>
-            ) : (
-              <div style={{ textAlign: "center", padding: "40px 20px", color: "#7d8590" }}>
-                <div style={{ fontSize: "32px", marginBottom: "12px" }}>🔍</div>
-                <div style={{ fontSize: "14px", marginBottom: "4px" }}>
-                  Aucun grant trouvé avec ces filtres
+
+                  <div className="filter-group">
+                    <label className="filter-label">Délai</label>
+                    <select
+                      className="filter-select"
+                      value={filters.deadline}
+                      onChange={(e) =>
+                        setFilters({
+                          ...filters,
+                          deadline: e.target.value as "30" | "60" | "90" | "Any",
+                        })
+                      }
+                    >
+                      <option value="Any">N'importe quel délai</option>
+                      <option value="30">30 jours</option>
+                      <option value="60">60 jours</option>
+                      <option value="90">90 jours</option>
+                    </select>
+                  </div>
+
+                  <div className="filter-group">
+                    <label className="filter-label">Recherche</label>
+                    <input
+                      type="text"
+                      className="filter-input"
+                      placeholder="Nom, organisation..."
+                      value={filters.search}
+                      onChange={(e) =>
+                        setFilters({
+                          ...filters,
+                          search: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
                 </div>
-                <div style={{ fontSize: "12px" }}>Essayez d'ajuster vos critères de recherche</div>
+
+                <div className="filter-buttons">
+                  <button
+                    className="btn"
+                    onClick={() =>
+                      setFilters({
+                        industry: "All",
+                        amountRange: { min: 0, max: 5000000 },
+                        deadline: "Any",
+                        search: "",
+                      })
+                    }
+                  >
+                    ↺ Reset
+                  </button>
+                </div>
               </div>
-            )}
-          </div>
+
+              {/* GRANTS */}
+              <div className="grants-container">
+                <div className="grants-header">
+                  <div className="grants-count">
+                    {filteredGrants.length} grant{filteredGrants.length !== 1 ? "s" : ""} trouvé
+                    {filteredGrants.length !== 1 ? "s" : ""}
+                  </div>
+                  <div className="select-all-wrap">
+                    <input
+                      type="checkbox"
+                      className="select-all-checkbox"
+                      checked={filteredGrants.length > 0 && selectedCount === filteredGrants.length}
+                      onChange={handleSelectAll}
+                    />
+                    <label className="select-all-label">Sélectionner tout</label>
+                  </div>
+                </div>
+
+                {filteredGrants.length > 0 ? (
+                  <div className="grants-grid">
+                    {filteredGrants.map((grant) => (
+                      <div
+                        key={grant.id}
+                        className={`grant-card ${selectedGrants[grant.id] ? "selected" : ""}`}
+                        onClick={() => handleGrantToggle(grant.id)}
+                      >
+                        <input
+                          type="checkbox"
+                          className="grant-checkbox"
+                          checked={selectedGrants[grant.id] || false}
+                          onChange={() => handleGrantToggle(grant.id)}
+                          onClick={(e) => e.stopPropagation()}
+                        />
+
+                        <div className="grant-header">
+                          <div className="grant-icon">{grant.icon}</div>
+                          <div>
+                            <div className="grant-title">{grant.name}</div>
+                            <div className="grant-org">{grant.organization}</div>
+                          </div>
+                        </div>
+
+                        <div className="grant-metadata">
+                          <div className="grant-amount">
+                            ${(grant.amount / 1000).toFixed(0)}K
+                          </div>
+                          <div className="grant-deadline">{grant.deadline}j restants</div>
+                          <div className="grant-match">{grant.matchPercentage}% match</div>
+                        </div>
+
+                        <div className="grant-description">{grant.description}</div>
+
+                        <div className="grant-tags">
+                          <div className="tag industry">{grant.industry}</div>
+                          <div className="tag stage">{grant.stage}</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div style={{ textAlign: "center", padding: "40px 20px", color: "#7d8590" }}>
+                    <div style={{ fontSize: "32px", marginBottom: "12px" }}>🔍</div>
+                    <div style={{ fontSize: "14px", marginBottom: "4px" }}>
+                      Aucun grant trouvé avec ces filtres
+                    </div>
+                    <div style={{ fontSize: "12px" }}>Essayez d'ajuster vos critères de recherche</div>
+                  </div>
+                )}
+              </div>
+            </>
+          )}
         </div>
 
         {/* ACTION FOOTER */}
-        <div className="action-footer">
-          <div className="selected-info">
-            {selectedCount > 0 ? (
-              <>
-                <strong>{selectedCount}</strong> grant{selectedCount !== 1 ? "s" : ""} sélectionné
-                {selectedCount !== 1 ? "s" : ""}
-              </>
-            ) : (
-              <>Sélectionnez au moins 1 grant pour continuer</>
-            )}
+        {!grantsLoading && !grantsError && (
+          <div className="action-footer">
+            <div className="selected-info">
+              {selectedCount > 0 ? (
+                <>
+                  <strong>{selectedCount}</strong> grant{selectedCount !== 1 ? "s" : ""} sélectionné
+                  {selectedCount !== 1 ? "s" : ""}
+                </>
+              ) : (
+                <>Sélectionnez au moins 1 grant pour continuer</>
+              )}
+            </div>
+            <button
+              className="btn-next"
+              disabled={selectedCount === 0}
+              onClick={handleNext}
+            >
+              Suivant →
+            </button>
           </div>
-          <button
-            className="btn-next"
-            disabled={selectedCount === 0}
-            onClick={handleNext}
-          >
-            Suivant →
-          </button>
-        </div>
+        )}
       </div>
     </>
   );

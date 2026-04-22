@@ -1,5 +1,6 @@
 import axios from "axios";
 import { LoginRequest, RegisterRequest, AuthResponse } from "@/types/auth";
+import { EvaluationResponse, ChatResponse, ConversationHistory } from "@/types/chatbot";
 
 // ────────────────────────────────────────────────────────
 // 🌐 API CLIENT CONFIGURATION
@@ -163,5 +164,74 @@ export async function launchSubmission(pitchId: string, grantId: string) {
     throw new Error(
       error.response?.data?.detail || "Submission launch failed"
     );
+  }
+}
+// ────────────────────────────────────────────────────────
+// 💬 CHATBOT ENDPOINTS
+// ────────────────────────────────────────────────────────
+
+export async function evaluatePitch(
+  pitchId: string,
+  userId: number
+): Promise<EvaluationResponse> {
+  try {
+    console.log("📤 Envoi requête d'évaluation:", { pitchId, userId });
+    const response = await api.post("/chatbot/evaluate", {
+      pitch_id: pitchId,
+      user_id: userId,
+    });
+    console.log("📥 Réponse reçue:", response.data);
+    return response.data;
+  } catch (error: any) {
+    console.error("❌ Erreur API:", {
+      status: error.response?.status,
+      statusText: error.response?.statusText,
+      detail: error.response?.data?.detail,
+      message: error.message,
+      url: error.response?.config?.url,
+    });
+    throw error;
+  }
+}
+
+export async function sendChatMessage(
+  pitchId: string,
+  userId: number,
+  message: string,
+  conversationId?: string
+): Promise<ChatResponse> {
+  try {
+    console.log("💬 Envoi message chat:", { conversationId, pitchId, message: message.substring(0, 50) });
+    const response = await api.post("/chatbot/chat", {
+      pitch_id: pitchId,
+      user_id: userId,
+      message: message,
+      conversation_id: conversationId || null,
+    });
+    console.log("✅ Réponse chat reçue");
+    return response.data;
+  } catch (error: any) {
+    console.error("❌ Erreur chat:", {
+      status: error.response?.status,
+      detail: error.response?.data?.detail,
+    });
+    throw error;
+  }
+}
+
+export async function getConversationHistory(
+  conversationId: string
+): Promise<ConversationHistory> {
+  try {
+    console.log("📋 Récupération historique:", conversationId);
+    const response = await api.get(`/chatbot/conversation/${conversationId}`);
+    console.log("✅ Historique reçu:", response.data.message_count, "messages");
+    return response.data;
+  } catch (error: any) {
+    console.error("❌ Erreur historique:", {
+      status: error.response?.status,
+      detail: error.response?.data?.detail,
+    });
+    throw error;
   }
 }
