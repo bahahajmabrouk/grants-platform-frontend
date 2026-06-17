@@ -125,11 +125,22 @@ export async function getPitchStatus(pitchId: string) {
 
 export async function listPitches() {
   try {
-    const response = await api.get("/pitch/");
+    const response = await api.get("/pitch/my/pitches");
     return response.data;
   } catch (error: any) {
     throw new Error(
       error.response?.data?.detail || "Failed to list pitches"
+    );
+  }
+}
+
+export async function deletePitch(pitchId: string) {
+  try {
+    const response = await api.delete(`/pitch/my/${pitchId}`);
+    return response.data;
+  } catch (error: any) {
+    throw new Error(
+      error.response?.data?.detail || "Failed to delete pitch"
     );
   }
 }
@@ -234,4 +245,47 @@ export async function getConversationHistory(
     });
     throw error;
   }
+}
+
+
+
+// Ajouter dans lib/api.ts — section SUBMISSIONS
+
+export async function listSubmissions() {
+  const res = await api.get("/submissions/");
+  return res.data;
+}
+
+export async function getSubmission(id: number) {
+  const res = await api.get(`/submissions/${id}`);
+  return res.data;
+}
+
+export async function updateSubmission(id: number, payload: { status?: string; notes?: string }) {
+  const res = await api.patch(`/submissions/${id}`, payload);
+  return res.data;
+}
+
+export async function approveSubmission(id: number) {
+  const res = await api.post(`/submissions/${id}/approve`);
+  return res.data;
+}
+
+export async function deleteSubmission(id: number) {
+  const res = await api.delete(`/submissions/${id}`);
+  return res.data;
+}
+
+export async function createSubmission(payload: {
+  pitch_id: string;
+  grant_id?: string;
+  grant_name: string;
+  grant_url?: string;
+  grant_source?: string;
+  adapted_text: string;
+  key_points: string[];
+  word_count: number;
+}) {
+  const res = await api.post("/submissions/", payload);
+  return res.data;
 }

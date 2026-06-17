@@ -261,6 +261,7 @@ export default function SignupForm({ onSuccess }: SignupFormProps) {
         <div className="form-group">
           <label className="form-label">👤 Prénom</label>
           <input
+            suppressHydrationWarning
             type="text"
             name="first_name"
             className="form-input"
@@ -273,6 +274,7 @@ export default function SignupForm({ onSuccess }: SignupFormProps) {
         <div className="form-group">
           <label className="form-label">👤 Nom</label>
           <input
+            suppressHydrationWarning
             type="text"
             name="last_name"
             className="form-input"
@@ -287,6 +289,7 @@ export default function SignupForm({ onSuccess }: SignupFormProps) {
       <div className="form-group">
         <label className="form-label">📧 Email</label>
         <input
+          suppressHydrationWarning
           type="email"
           name="email"
           className="form-input"
@@ -300,6 +303,7 @@ export default function SignupForm({ onSuccess }: SignupFormProps) {
       <div className="form-group">
         <label className="form-label">🏢 Entreprise (optionnel)</label>
         <input
+          suppressHydrationWarning
           type="text"
           name="company_name"
           className="form-input"
@@ -314,6 +318,7 @@ export default function SignupForm({ onSuccess }: SignupFormProps) {
         <label className="form-label">🔐 Password</label>
         <div className="password-wrap">
           <input
+            suppressHydrationWarning
             type={showPassword ? "text" : "password"}
             name="password"
             className="form-input"
@@ -324,6 +329,7 @@ export default function SignupForm({ onSuccess }: SignupFormProps) {
             style={{ paddingRight: "40px" }}
           />
           <button
+            suppressHydrationWarning
             type="button"
             className="password-toggle"
             onClick={() => setShowPassword(!showPassword)}
@@ -350,6 +356,7 @@ export default function SignupForm({ onSuccess }: SignupFormProps) {
       <div className="form-group">
         <label className="form-label">🔐 Confirmer Password</label>
         <input
+          suppressHydrationWarning
           type={showPassword ? "text" : "password"}
           name="confirmPassword"
           className="form-input"
@@ -361,6 +368,7 @@ export default function SignupForm({ onSuccess }: SignupFormProps) {
       </div>
 
       <button
+        suppressHydrationWarning
         type="submit"
         className="submit-btn"
         disabled={loading}

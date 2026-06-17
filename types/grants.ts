@@ -14,6 +14,7 @@ export interface Grant {
   description: string;
   organization: string;
   country: string;
+  portal_url: string;
 }
 
 export interface GrantFilters {
@@ -28,4 +29,15 @@ export interface GrantFilters {
 
 export interface SelectedGrants {
   [key: string]: boolean;
+}
+
+export interface AdaptedGrant {
+  grant_id: string;
+  grant_name: string;
+  adapted_text: string;
+  key_points: string[];
+  word_count: number;
+  portal_url: string;
+  status: "idle" | "loading" | "done" | "error";
+  error?: string;
 }

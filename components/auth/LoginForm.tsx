@@ -186,6 +186,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
       <div className="form-group">
         <label className="form-label">📧 Email</label>
         <input
+          suppressHydrationWarning
           type="email"
           className="form-input"
           placeholder="startup@example.com"
@@ -199,6 +200,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
         <label className="form-label">🔐 Password</label>
         <div className="password-wrap">
           <input
+            suppressHydrationWarning
             type={showPassword ? "text" : "password"}
             className="form-input"
             placeholder="••••••••"
@@ -208,6 +210,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
             style={{ paddingRight: "40px" }}
           />
           <button
+            suppressHydrationWarning
             type="button"
             className="password-toggle"
             onClick={() => setShowPassword(!showPassword)}
@@ -219,6 +222,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
       </div>
 
       <button
+        suppressHydrationWarning
         type="submit"
         className="submit-btn"
         disabled={loading}
